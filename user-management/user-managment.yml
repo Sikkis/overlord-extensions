@@ -1,0 +1,56 @@
+- name: Add users to the machine
+  gather_facts: true
+  hosts: all
+  tasks:
+    - name: Add user 's1kk1s' with a bash shell, appending the group 'sudoers'
+      user:
+        name: s1kk1s
+        shell: /bin/bash
+        #ansible all -i localhost, -m debug -a "msg={{ 'mypassword' | password_hash('sha512', 'mysecretsalt') }}" change password and salt!
+        password: "$6$mysecretsalt$qJbapG68nyRab3gxvKWPUcs2g3t0oMHSHMnSKecYNpSi3CuZm.GbBqXO8BE6EI6P1JUefhA0qvD7b5LSh./PU1"
+        groups: sudo
+        append: yes
+      become: true
+    - name: Add user 'v4kkis' with a bash shell, appending the group 'sudoers'
+      user:
+        name: v4kkis
+        shell: /bin/bash
+        password: "$6$mysecretsalt$qJbapG68nyRab3gxvKWPUcs2g3t0oMHSHMnSKecYNpSi3CuZm.GbBqXO8BE6EI6P1JUefhA0qvD7b5LSh./PU1" 
+        groups: sudo
+        append: yes
+      become: true
+    - name: Upload ssh auth key from file for s1kk1s
+      authorized_key:
+        user: s1kk1s
+        state: present
+        key: "{{ lookup('file', '/path/to/ssh/pub/key/s1kk1s.pub') }}" # Modify
+      become: true
+    - name: Upload ssh auth key from file for v4kkis
+      authorized_key:
+        user: v4kkis
+        state: present
+        key: "{{ lookup('file', '/path/to/ssh/pub/key/v4kkis.pub') }}" # Modify
+      become: true
+    - name: Install util-linux
+      apt:
+        name: util-linux
+        state: present
+        update_cache: yes
+      become: true
+    - name: git clone Tmux Logging
+      git:
+        repo: https://github.com/tmux-plugins/tmux-logging/
+        dest: /opt/tmux-logging/
+      become: true
+    - name : Modify /etc/profile and enable bash logging
+      script: /path/to/file/bash-logger.sh #Modify
+      become: true
+    # - name : Enable tmux loggin for su user aws
+    #   shell: echo "run-shell /opt/tmux-logging/logging.tmux" >> /home/{{ ansible_user_id }}/.tmux.conf
+    #   become: true
+    - name : Enable tmux logging for s1kk1s
+      shell: echo "run-shell /opt/tmux-logging/logging.tmux" >> /home/s1kk1s/.tmux.conf
+      become: true
+    - name : Enable tmux logging for v4kkis
+      shell: echo "run-shell /opt/tmux-logging/logging.tmux" >> /home/v4kkis/.tmux.conf
+      become: true
