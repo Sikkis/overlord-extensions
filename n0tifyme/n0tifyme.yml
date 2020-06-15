@@ -1,0 +1,28 @@
+- name: Clone n0tifyme
+  hosts: all
+  tasks:
+    - name: Install pip3
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+      become: true
+    - name: git clone n0tifyme
+      git:
+        repo: https://github.com/Sikkis/n0tifyme.git
+        dest: /opt/n0tifyme
+        force: true
+      become: true
+    - pip:
+        name: pymsteams
+        executable: pip3
+    - name: Add webhook
+      shell: echo 'teamsHook = <webhook>' >>/opt/n0tifyme/bot.conf # Replace webhook
+      become: true
+    - name: Start tmux session 
+      shell: tmux new-session -d -s n0tifyme;
+      become: true
+    - name: Change directory
+      shell: tmux send-keys -t n0tifyme 'cd /opt/n0tifyme/' C-m
+    - name: Start n0tifyme
+      shell: tmux send-keys -t n0tifyme 'python3 /opt/n0tifyme/n0tifyme.py' C-m

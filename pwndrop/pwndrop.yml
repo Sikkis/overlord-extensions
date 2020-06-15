@@ -1,0 +1,5 @@
+- name: Install pwndrop
+  hosts: all
+  tasks:
+    - name: Download and install pwndrop
+      shell: curl https://raw.githubusercontent.com/kgretzky/pwndrop/master/install_linux.sh | sudo bash
